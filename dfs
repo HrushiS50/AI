@@ -1,0 +1,35 @@
+g = {}
+n = int(input("Enter no. of edges: "))
+
+for i in range(n):
+    a, b = map(int, input().split())
+    if g.get(a) == None:
+        g[a] = []
+    g[a].append(b)
+    if g.get(b) == None:
+        g[b] = []
+    g[b].append(a)
+
+print(g)
+
+def dfs(g,s):
+    vist[s]=1
+    print(s)
+    for c in g[s]:
+        if not vist[c]:
+            dfs(g,c)
+vist=[0]*6
+dfs(g,0)
+
+def bfs(g,s):
+    q=[s]
+    vis=[s]
+    while q:
+        cur=q.pop(0)
+        print(cur)
+        for c in g[cur]:
+            if c not in vis:
+                q.append(c)
+                vis.append(c)
+                
+bfs(g,0)
