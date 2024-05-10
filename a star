@@ -1,0 +1,72 @@
+import heapq
+
+def astar(graph, start, goal):
+    # Initialize the open and closed lists
+    open_list = []
+    closed_set = set()
+
+    # Initialize the start node with a g value of 0
+    g_score = {node: float('inf') for node in graph}
+    g_score[start] = 0
+
+    # Add the start node to the open list with f value equal to heuristic value
+    f_score = {node: float('inf') for node in graph}
+    f_score[start] = heuristic(start, goal)
+    heapq.heappush(open_list, (f_score[start], start))
+
+    while open_list:
+        _, current = heapq.heappop(open_list)
+
+        if current == goal:
+            return reconstruct_path(graph, start, goal)
+
+        closed_set.add(current)
+
+        for neighbor, weight in graph[current].items():
+            if neighbor in closed_set:
+                continue
+
+            tentative_g_score = g_score[current] + weight
+            if tentative_g_score < g_score[neighbor]:
+                g_score[neighbor] = tentative_g_score
+                f_score[neighbor] = tentative_g_score + heuristic(neighbor, goal)
+                heapq.heappush(open_list, (f_score[neighbor], neighbor))
+
+    # If goal is not reached, return None
+    return None
+
+def heuristic(node, goal):
+    # A simple heuristic function - Euclidean distance
+    return abs(node[0] - goal[0]) + abs(node[1] - goal[1])
+
+def reconstruct_path(graph, start, goal):
+    # Reconstruct the path from the start to the goal node
+    current = goal
+    path = [current]
+
+    while current != start:
+        current = min(graph[current], key=lambda x: graph[current][x])
+        path.append(current)
+
+    return path[::-1]
+
+# Example graph representation (adjacency list)
+graph = {
+    (0, 0): {(0, 1): 1, (1, 0): 1},
+    (0, 1): {(0, 0): 1, (0, 2): 1, (1, 1): 1},
+    (0, 2): {(0, 1): 1, (1, 2): 1},
+    (1, 0): {(0, 0): 1, (1, 1): 1, (2, 0): 1},
+    (1, 1): {(0, 1): 1, (1, 0): 1, (1, 2): 1, (2, 1): 1},
+    (1, 2): {(0, 2): 1, (1, 1): 1, (2, 2): 1},
+    (2, 0): {(1, 0): 1, (2, 1): 1},
+    (2, 1): {(1, 1): 1, (2, 0): 1, (2, 2): 1},
+    (2, 2): {(1, 2): 1, (2, 1): 1}
+}
+
+# Example start and goal nodes
+start = (0, 0)
+goal = (2, 2)
+
+# Find the shortest path using A* algorithm
+path = astar(graph, start, goal)
+print("Shortest Path:", path)
